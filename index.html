@@ -5,11 +5,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Code-Quiz</title>
+  <title>WEATHER-DASHBOARD</title>
   <link rel="stylesheet" href="./assets/css/style.css">
+  <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  </link>
+  <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+</link>
 </head>
 
-<body>
+<header>
+  <nav class="navbar navbar-dark bg-primary">
+    <a class="navbar-brand w-100 h1 mb-0 text-center" >Weather Dashboard</a>
+  </nav>
+</header>
+
+  <div class="container">
+    <div class="row">
+      <div class="column-4 bg-light">
+        <p class="Search-heading my-3">Search For a City</p>
+        <input type="text" id="city-name" class="forms">
+        <button class="btn btn-primary" type="submit">Search
+        <i class="fas fa-search"></i>
+      </button>
+      <div id="previous-searched" class="already-searched"></div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-9">
+      <div class="row select-city" id="selected-city"></div>
+<div class="row border" id="weely-forecast">
+  <h2 class="col-9" id="forecast"></h2>
+  <div class="d-inline-flex" id="weekly-forecast">
+  </div>
+</div>
+
+      
+  </div>
+  
+</div>
+
+  <body>
+  </nav>
+
+  </nav>
 
     <script src="./assets/js/script.js"></script>
 </body>
