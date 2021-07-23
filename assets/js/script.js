@@ -16,31 +16,36 @@ var carryOut = function(event){
  var cityWeather = inputCityEl.value.trim();
  if(cityWeather){
  retreiveCityWeather(cityWeather);
+ inputCityEl.value="";
  }else{
      alert("enter a valid city");
  
  }
  rememberSearch();
+ console.log(cityLocations)
 }
 
 var rememberSearch = function(){
-localStorage.setItem("city", JSON.stringify(city));
+localStorage.setItem("cityLocations", JSON.stringify(cityLocations));
 };
 
 
 
 var retreiveCityWeather = function(cityWeather){
-    var apiUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=${city}=${apiKey}'
+    var apiUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat='
 
-    fetch(apiUrl)
+    fetch('https://api.openweathermap.org/data/2.5/onecall?lat=d1b5b46c7ffa1a821d537bdfb121c6be')
     .then(function(response){
-        response.json().then(function(data){
+        return response.json().then(function(data){
+            console.log(data)
             showWeather(city, data);
         });
     });
 };
 
+var showWeather = function(){
 
+}
 
 
 
