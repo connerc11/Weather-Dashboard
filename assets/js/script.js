@@ -1,6 +1,5 @@
 var cityLocations = [];
 
-var searchHeadingEl = document.querySelector("#search-city");
 var inputCityEl = document.querySelector("#city-name");
 var previousSearchedEl = document.querySelector("#previous-searched");
 var cityChoiceEl = document.querySelector("#selected-city");
@@ -9,43 +8,42 @@ var weatherForecast = document.querySelector("#weather");
 var currentWeather = document.getElementById("#current-weather");
 
 var apiKey = "d1b5b46c7ffa1a821d537bdfb121c6be";
-
-
-var carryOut = function(event){
- event.preventDefault();
- var cityWeather = inputCityEl.value.trim();
- if(cityWeather){
- retreiveCityWeather(cityWeather);
- inputCityEl.value="";
- }else{
-     alert("enter a valid city");
- 
- }
- rememberSearch();
- console.log(cityLocations)
-}
-
-var rememberSearch = function(){
-localStorage.setItem("cityLocations", JSON.stringify(cityLocations));
-};
+var apiUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=';
 
 
 
-var retreiveCityWeather = function(cityWeather){
-    var apiUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat='
 
-    fetch('https://api.openweathermap.org/data/2.5/onecall?lat=d1b5b46c7ffa1a821d537bdfb121c6be')
+
+var retreiveCityWeather = function(event){
+    event.preventDefault()
+    
+    var storedInfo = inputCityEl.value
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${storedInfo}&appid=${apiKey}`)
     .then(function(response){
-        return response.json().then(function(data){
-            console.log(data)
-            showWeather(city, data);
-        });
-    });
+        return response.json();
+    })
+    .then(function(data){
+        var lat = data.coord.lat
+       var lon = data.coord.lon
+
+       secondFunction(lat, lon)
+   })
+
+   
 };
 
-var showWeather = function(){
-
+var secondFunction = function(lat, lon){
+    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`)
+    .then(function(response){
+        return response.json();
+    })
+    .then(function(data){
+        console.log(data)
+    })
 }
+
+
+document.getElementById("city-btn").addEventListener("click", retreiveCityWeather);
 
 
 
