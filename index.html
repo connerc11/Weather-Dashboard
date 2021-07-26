@@ -7,63 +7,61 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>WEATHER-DASHBOARD</title>
   <link rel="stylesheet" href="./assets/css/style.css">
-  <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   </link>
-  <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
-</link>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+  </link>
 </head>
 
 <header>
   <nav class="navbar navbar-dark bg-primary">
-    <a class="navbar-brand w-100 h1 mb-0 text-center" >Weather Dashboard</a>
+    <a class="navbar-brand w-100 h1 mb-0 text-center">Weather Dashboard</a>
   </nav>
 </header>
 
-  <div class="container">
-    <div class="row">
-      <div class="column-4 bg-light">
-        <form id="search-city" class= "border p-1">
+<div class="container">
+  <div class="row mt-3">
+    <div class="column-4 bg-light">
+      <form id="search-city" class="border p-1">
         <p class="Search-heading my-3">Search For a City</p>
         <input type="text" id="city-name" class="forms">
         <button class="btn btn-primary" type="submit" id="city-btn">Search
-        <i class="fas fa-search"></i>
-      </button>
+          <i class="fas fa-search"></i>
+        </button>
       </form>
       <div id="previous-searched" class="already-searched"></div>
+    </div>
+    <div id ="main-weather" class="col-6 border"></div>
+  </div>
+  <div class="col-12 col-sm-9 border">
+    <div class="row select-city" id="weather-city"></div>
+    <div class="col-12">
+      <h2 id="current-weather"></h2>
+      <div id="weather-container" class="all">
+
+      </div>
+
+    </div>
+
+
+    <div class="row border" id="weekly-weather">
+      <h2 class="col-9" id="weather"></h2>
+      <div class="d-inline-flex" id="weekly-forecast">
       </div>
     </div>
-    <div class="col-12 col-sm-9">
-      <div class="row select-city" id="weather-city"></div>
-      <div class="col-12">
-        <h2 id="current-weather"></h2>
-        <div id="weather-container" class="all">
-      
-        </div>
-
-      </div>
 
 
-      <div class="row border" id="weekly-weather">
-  <h2 class="col-9" id="weather"></h2>
-  <div class="d-inline-flex" id="weekly-forecast">
   </div>
+
 </div>
 
-      
-  </div>
-  
-</div>
-
-  <body>
+<body>
   </nav>
 
   </nav>
-
-    <script src="./assets/js/script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script src="./assets/js/script.js"></script>
 </body>
 
 </html>

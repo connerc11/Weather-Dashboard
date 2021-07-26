@@ -1,4 +1,5 @@
-var cityLocations = [];
+var cityLocations = JSON.parse(localStorage.getItem("cityLocation")) || [];
+console.log(cityLocations)
 
 var inputCityEl = document.querySelector("#city-name");
 var previousSearchedEl = document.querySelector("#previous-searched");
@@ -14,32 +15,51 @@ var apiUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=';
 
 
 
-var retreiveCityWeather = function(event){
+var retreiveCityWeather = function (event) {
     event.preventDefault()
-    
-    var storedInfo = inputCityEl.value
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${storedInfo}&appid=${apiKey}`)
-    .then(function(response){
-        return response.json();
-    })
-    .then(function(data){
-        var lat = data.coord.lat
-       var lon = data.coord.lon
+    $("#main-weather").empty()
 
-       secondFunction(lat, lon)
-   })
+    var storedInfo = inputCityEl.value;
+    if( cityLocations.indexOf(storedInfo) === -1 ){
+        cityLocations.push(storedInfo);
 
-   
+    }
+    localStorage.setItem("cityLocation", JSON.stringify(cityLocations))
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${storedInfo}&units=imperial&appid=${apiKey}`)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            console.log(data);
+            if(data.cod === "404" || data.cod === "400"){
+                alert(data.message);
+                return;
+            }
+            var lat = data.coord.lat
+            var lon = data.coord.lon
+            var card = $("<div>").addClass("card");
+            var cardBody = $("<div>").addClass("card-body");
+            var cardTitle = $("<h4>").addClass("card-title").text(data.name);
+            var cardTemp = $("<h6>").addClass("card-text").text(data.main.temp);
+            $("#main-weather").append(card.append(cardBody.append(cardTitle, cardTemp)))
+            secondFunction(lat, lon)
+        })
+
+
 };
 
-var secondFunction = function(lat, lon){
+var secondFunction = function (lat, lon) {
     fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${apiKey}`)
-    .then(function(response){
-        return response.json();
-    })
-    .then(function(data){
-        console.log(data)
-    })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            for(var i = 1; i < 6; i++){
+                console.log(data.daily[i]);
+                var dateEl = moment.unix(data.daily[i].dt).format("MMM Do")
+                console.log(dateEl)
+            }
+        })
 }
 
 
