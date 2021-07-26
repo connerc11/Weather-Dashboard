@@ -40,8 +40,11 @@ var retreiveCityWeather = function (event) {
             var card = $("<div>").addClass("card");
             var cardBody = $("<div>").addClass("card-body");
             var cardTitle = $("<h4>").addClass("card-title").text(data.name);
-            var cardTemp = $("<h6>").addClass("card-text").text(data.main.temp);
-            $("#main-weather").append(card.append(cardBody.append(cardTitle, cardTemp)))
+            var cardTemp = $("<p>").addClass("card-text currentTemp").text("Temperature~" + data.main.temp + " °F");
+            var cardHumidity =$("<p>").addClass("card-text currentHumid").text("Humidity~" + data.main.humidity + " %");
+            var cardWind = $("<p>").addClass("card-text currentWind").text("Wind Speed~" + data.wind.speed + " MPH");
+            var cardIndex = $("<p>").addClass("card-text currentIndex").text("UVI~" + data.uvi);
+           $("#main-weather").append(card.append(cardBody.append(cardTitle, cardTemp, cardHumidity, cardWind, cardIndex)));
             secondFunction(lat, lon)
         })
 
