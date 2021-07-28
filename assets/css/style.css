@@ -6,14 +6,3 @@
     text-align: center;
 }
 
-.card-text .current-index.great {
-    color: green;
-}
-
-.card-text .current-index.moderate {
-    color: yellow;
-}
-
-.card-text .current-index.severe {
-    color: red;
-}
