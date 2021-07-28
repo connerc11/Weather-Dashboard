@@ -1,6 +1,8 @@
 var cityLocations = JSON.parse(localStorage.getItem("cityLocation")) || [];
 console.log(cityLocations)
 
+
+
 var inputCityEl = document.querySelector("#city-name");
 var previousSearchedEl = document.querySelector("#previous-searched");
 var cityChoiceEl = document.querySelector("#selected-city");
@@ -98,52 +100,57 @@ var secondFunction = function (lat, lon) {
         
         
         var thirdFunction = function (lat, lon) {
-            fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
                 .then(function (response) {
                     return response.json()
                     })
                     .then(function (response) {
                         console.log(fetch)
                         console.log(response)
-                   var day1 = moment(response.daily[1]).format("MMM Do")
-                   console.log(moment(response.daily[1]).format("MMM Do"))
+                   var day1 = moment(response.list[1].dt_txt).format("MMM Do")
+                   console.log(moment(response.list[1].dt_txt).format("MMM Do"))
                    
                    $(".day1-data-date").html("<h5>" + day1 + "</h5>");
-                   $(".day1-data-humidity").text("Humidity: " + response.daily[1].humidity + "%");
-                   $(".day1-data-temp").text("Temperature : " + response.daily[1].temp + " °F");
-                   $(".day1-data-wind").text("Wind : " + response.daily[1].wind_speed + " MPH");
+                   $(".day1-data-icon").html("<img src=https://openweathermap.org/img/w/" + response.list[1].weather[0].icon + ".png>")
+                   $(".day1-data-humidity").text("Humidity: " + response.list[1].main.humidity + "%");
+                   $(".day1-data-temp").text("Temperature : " + response.list[1].main.temp + " °F");
+                   $(".day1-data-wind").text("Wind : " + response.list[1].wind.speed + " MPH");
 
-                   var day2 = moment(response.daily[2]).format("MMM Do")
-                   console.log(moment(response.daily[2]).format("MMM Do"))
+                   var day2 = moment(response.list[9].dt_txt).format("MMM Do")
+                   console.log(moment(response.list[9].dt_txt).format("MMM Do"))
                    
                    $(".day2-data-date").html("<h5>" + day2 + "</h5>");
-                   $(".day2-data-humidity").text("Humidity: " + response.daily[2].humidity + "%");
-                   $(".day2-data-temp").text("Temperature : " + response.daily[2].temp + " °F");
-                   $(".day2-data-wind").text("Wind : " + response.daily[2].wind_speed + " MPH");
+                   $(".day2-data-icon").html("<img src=https://openweathermap.org/img/w/" + response.list[9].weather[0].icon + ".png>")
+                   $(".day2-data-humidity").text("Humidity: " + response.list[9].main.humidity + "%");
+                   $(".day2-data-temp").text("Temperature : " + response.list[9].main.temp + " °F");
+                   $(".day2-data-wind").text("Wind : " + response.list[9].wind.speed + " MPH");
 
-                   var day3 = moment(response.daily[3]).format("MMM Do")
-                   console.log(moment(response.daily[3]).format("MMM Do"))
+                   var day3 = moment(response.list[17].dt_txt).format("MMM Do")
+                   console.log(moment(response.list[17].dt_txt).format("MMM Do"))
                    
                    $(".day3-data-date").html("<h5>" + day3 + "</h5>");
-                   $(".day3-data-humidity").text("Humidity: " + response.daily[3].humidity + "%");
-                   $(".day3-data-temp").text("Temperature : " + response.daily[3].temp + " °F");
-                   $(".day3-data-wind").text("Wind : " + response.daily[3].wind_speed + " MPH");
+                   $(".day3-data-icon").html("<img src=https://openweathermap.org/img/w/" + response.list[17].weather[0].icon + ".png>")
+                   $(".day3-data-humidity").text("Humidity: " + response.list[17].main.humidity + "%");
+                   $(".day3-data-temp").text("Temperature : " + response.list[17].main.temp + " °F");
+                   $(".day3-data-wind").text("Wind : " + response.list[17].wind.speed + " MPH");
 
-                   var day4 = moment(response.daily[4]).format("MMM Do")
-                   console.log(moment(response.daily[4]).format("MMM Do"))
+                   var day4 = moment(response.list[25].dt_txt).format("MMM Do")
+                   console.log(moment(response.list[25].dt_txt).format("MMM Do"))
                    
                    $(".day4-data-date").html("<h5>" + day4 + "</h5>");
-                   $(".day4-data-humidity").text("Humidity: " + response.daily[4].humidity + "%");
-                   $(".day4-data-temp").text("Temperature : " + response.daily[4].temp + " °F");
-                   $(".day4-data-wind").text("Wind : " + response.daily[4].wind_speed + " MPH");
+                   $(".day4-data-icon").html("<img src=https://openweathermap.org/img/w/" + response.list[25].weather[0].icon + ".png>")
+                   $(".day4-data-humidity").text("Humidity: " + response.list[25].main.humidity + "%");
+                   $(".day4-data-temp").text("Temperature : " + response.list[25].main.temp + " °F");
+                   $(".day4-data-wind").text("Wind : " + response.list[25].wind.speed + " MPH");
 
-                   var day5 = moment(response.daily[5]).format("MMM Do")
-                   console.log(moment(response.daily[5]).format("MMM Do"))
+                   var day5 = moment(response.list[33].dt_txt).format("MMM Do")
+                   console.log(moment(response.list[33].dt_txt).format("MMM Do"))
                    
-                   $(".day5-data-date").html("<h5>" + day2 + "</h5>");
-                   $(".day5-data-humidity").text("Humidity: " + response.daily[5].humidity + "%");
-                   $(".day5-data-temp").text("Temperature : " + response.daily[5].temp + " °F");
-                   $(".day5-data-wind").text("Wind : " + response.daily[5].wind_speed + " MPH");
+                   $(".day5-data-date").html("<h5>" + day5 + "</h5>");
+                   $(".day5-data-icon").html("<img src=https://openweathermap.org/img/w/" + response.list[25].weather[0].icon + ".png>")
+                   $(".day5-data-humidity").text("Humidity: " + response.list[33].main.humidity + "%");
+                   $(".day5-data-temp").text("Temperature : " + response.list[33].main.temp + " °F");
+                   $(".day5-data-wind").text("Wind : " + response.list[33].wind.speed + " MPH");
 
 
 
