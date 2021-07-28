@@ -74,11 +74,11 @@ var secondFunction = function (lat, lon) {
             $("#main-weather").append(card.append(cardBody.append(cardIndex)));
 
             if (uvi < 4) {
-                $('#uvi-badge').add('background-color', 'green');
+                $('.currentIndex').attr('style', 'background-color:green; color:white');
             } else if (uvi > 4 && uvi <= 9) {
-                $('#uvi-badge').add('background-color', 'yellow');
+                $('.currentIndex').attr('style', 'background-color:yellow; color:black');
             } else if (uvi > 9) {
-                $('#uvi-badge').add('background-color', 'red');
+                $('.currentIndex').attr('style', 'background-color:red; color:white');
             }
             thirdFunction(lat, lon)
 
