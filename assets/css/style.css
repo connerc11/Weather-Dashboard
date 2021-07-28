@@ -1,8 +1,23 @@
+* {
+    color: blue;
+}
+
 .card-text {
     color: blue;
 }
 
 .card-title {
     text-align: center;
+}
+
+.card-body {
+    color: blue;
+}
+
+
+
+.navbar {
+    color: red;
+    font-size: 40px;
 }
 
