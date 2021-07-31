@@ -30,8 +30,23 @@ var retreiveCityWeather = function (event) {
     if (cityLocations.indexOf(storedInfo) === -1) {
         cityLocations.push(storedInfo);
 
+        for (let i = 0; i < storedInfo.length; i++)
+            var newV = $("<li>").attr("class", "history");
+            newV.text(storedInfo[i]);
+            inputCityEl.appendChild(newV)
+            
+    
+    
     }
-    localStorage.setItem("cityLocation", JSON.stringify(cityLocations))
+        
+// var getCityWeather = function (data){
+// inputCityEl.empty()
+// var searchArr = JSON.parse(localStorage.getItem("storedInfo"));
+
+// }
+
+
+     localStorage.setItem("cityLocation", JSON.stringify(cityLocations))
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${storedInfo}&units=imperial&appid=${apiKey}`)
         .then(function (response) {
             return response.json();
@@ -47,8 +62,8 @@ var retreiveCityWeather = function (event) {
             }
             var lat = data.coord.lat
             var lon = data.coord.lon
-            var cardTitle = $("<h4>").addClass("card-title").text(data.name)
-            var cardIcon = $("<img>").attr("src", "https://openweathermap.org/img/w/" + data.weather[0].icon + ".png")
+            var cardTitle = $("<h4>").addClass("card-title").text(data.name + " ~ Current Day");
+            var cardIcon = $("<img>").attr("src", "https://openweathermap.org/img/w/" + data.weather[0].icon + ".png");
             var cardTemp = $("<p>").addClass("card-text currentTemp").text("Temperature~" + data.main.temp + " °F");
             var cardHumidity = $("<p>").addClass("card-text currentHumid").text("Humidity~" + data.main.humidity + " %");
             var cardWind = $("<p>").addClass("card-text currentWind").text("Wind Speed~" + data.wind.speed + " MPH");
@@ -153,6 +168,7 @@ var secondFunction = function (lat, lon) {
 
 
 document.getElementById("city-btn").addEventListener("click", retreiveCityWeather);
+
 
 
 
