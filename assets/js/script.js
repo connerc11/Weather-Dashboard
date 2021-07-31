@@ -5,7 +5,7 @@ console.log(cityLocations)
 
 var inputCityEl = document.querySelector("#city-name");
 var previousSearchedEl = document.querySelector("#previous-searched");
-var cityChoiceEl = document.querySelector("#selected-city");
+
 var weeklyForecastEl = document.querySelector("#weekly-forecast");
 var weatherForecast = document.querySelector("#weather");
 var currentWeather = document.getElementById("#current-weather");
@@ -25,15 +25,19 @@ var apiUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=';
 var retreiveCityWeather = function (event) {
     event.preventDefault()
     $("#main-weather").empty()
+    // document.getElementById("main-weather").reset()
 
     var storedInfo = inputCityEl.value;
     if (cityLocations.indexOf(storedInfo) === -1) {
         cityLocations.push(storedInfo);
+       
+        
+        // cityLocations.clear(storedInfo);
 
-        for (let i = 0; i < storedInfo.length; i++)
-            var newV = $("<li>").attr("class", "history");
-            newV.text(storedInfo[i]);
-            inputCityEl.appendChild(newV)
+        // for (let i = 0; i < storedInfo.length; i++)
+        //     var newV = $("<li>").attr("class", "history");
+        //     newV.text(storedInfo[i]);
+        //     inputCityEl.appendChild(newV)
             
     
     
@@ -67,8 +71,12 @@ var retreiveCityWeather = function (event) {
             var cardTemp = $("<p>").addClass("card-text currentTemp").text("Temperature~" + data.main.temp + " °F");
             var cardHumidity = $("<p>").addClass("card-text currentHumid").text("Humidity~" + data.main.humidity + " %");
             var cardWind = $("<p>").addClass("card-text currentWind").text("Wind Speed~" + data.wind.speed + " MPH");
-
-            $("#main-weather").append(card.append(cardBody.append(cardTitle, cardIcon, cardTemp, cardHumidity, cardWind)));
+            // var finalResult = $("<div>").append(cardTitle).append(cardIcon).append(cardTemp).append(cardHumidity).append(cardWind);
+            cardBody.html(cardIcon).append(cardTemp).append(cardHumidity).append(cardWind)
+            card.html(cardTitle).append(cardBody)
+            $("#main-weather").html(card);
+            // $("#main-weather").html(card.html(cardBody.html(finalResult)));
+            
             secondFunction(lat, lon)
         })
 
@@ -87,6 +95,11 @@ var secondFunction = function (lat, lon) {
             var uviResults = data.current.uvi
             var uvi = uviResults
             $("#main-weather").append(card.append(cardBody.append(cardIndex)));
+            
+           
+            
+            
+           
 
             if (uvi < 4) {
                 $('.currentIndex').attr('style', 'background-color:green; color:white');
@@ -168,6 +181,13 @@ var secondFunction = function (lat, lon) {
 
 
 document.getElementById("city-btn").addEventListener("click", retreiveCityWeather);
+// document.getElementById("city-btn").reset("click", retreiveCityWeather)
+
+
+ 
+// document.getElementById("city-btn").removeEventListener("click", retreiveCityWeather);
+
+
 
 
 
