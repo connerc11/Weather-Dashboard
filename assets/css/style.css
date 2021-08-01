@@ -16,6 +16,7 @@ header {
 
 .card-body {
     color: blue;
+    text-align: center;
 }
 
 .currentIndex {
