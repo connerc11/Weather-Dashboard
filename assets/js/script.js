@@ -20,38 +20,28 @@ var apiUrl = 'https://api.openweathermap.org/data/2.5/onecall?lat=';
 
 
 
-
-
-var retreiveCityWeather = function (event) {
+var searchButtonH = function (data) {
     event.preventDefault()
     $("#main-weather").empty()
-    // document.getElementById("main-weather").reset()
+    var inputCityVal = inputCityEl.value
+    retreiveCityWeather(inputCityVal)
+    displayCity(inputCityVal)
+}
 
-    var storedInfo = inputCityEl.value;
-    if (cityLocations.indexOf(storedInfo) === -1) {
-        cityLocations.push(storedInfo);
-       
-        
-        // cityLocations.clear(storedInfo);
+var retreiveCityWeather = function (inputCityVal) {
+    
+   
 
-        // for (let i = 0; i < storedInfo.length; i++)
-        //     var newV = $("<li>").attr("class", "history");
-        //     newV.text(storedInfo[i]);
-        //     inputCityEl.appendChild(newV)
-            
-    
-    
+    if (cityLocations.indexOf(inputCityVal) === -1) {
+        cityLocations.push(inputCityVal);
+
     }
         
-// var getCityWeather = function (data){
-// inputCityEl.empty()
-// var searchArr = JSON.parse(localStorage.getItem("storedInfo"));
 
-// }
 
 
      localStorage.setItem("cityLocation", JSON.stringify(cityLocations))
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${storedInfo}&units=imperial&appid=${apiKey}`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${inputCityVal}&units=imperial&appid=${apiKey}`)
         .then(function (response) {
             return response.json();
 
@@ -71,12 +61,10 @@ var retreiveCityWeather = function (event) {
             var cardTemp = $("<p>").addClass("card-text currentTemp").text("Temperature~" + data.main.temp + " °F");
             var cardHumidity = $("<p>").addClass("card-text currentHumid").text("Humidity~" + data.main.humidity + " %");
             var cardWind = $("<p>").addClass("card-text currentWind").text("Wind Speed~" + data.wind.speed + " MPH");
-            // var finalResult = $("<div>").append(cardTitle).append(cardIcon).append(cardTemp).append(cardHumidity).append(cardWind);
+           
             cardBody.html(cardIcon).append(cardTemp).append(cardHumidity).append(cardWind)
             card.html(cardTitle).append(cardBody)
             $("#main-weather").html(card);
-            // $("#main-weather").html(card.html(cardBody.html(finalResult)));
-            
             secondFunction(lat, lon)
         })
 
@@ -171,27 +159,23 @@ var secondFunction = function (lat, lon) {
 
 
 
-            })
-
-
-
-
+        })
     }
 }
 
+function displayCity(inputCityVal){
 
-document.getElementById("city-btn").addEventListener("click", retreiveCityWeather);
-// document.getElementById("city-btn").reset("click", retreiveCityWeather)
+    console.log(inputCityVal)
+    var searchItem1 = document.createElement("p");
+    searchItem1.setAttribute("class", "list-group-item list-group-item-action");
+    searchItem1.innerHTML = inputCityVal;
+    console.log(searchItem1)
+    var searchHistory = document.querySelector("#searchHistory1");
+    searchHistory.appendChild(searchItem1);
+};
 
 
- 
-// document.getElementById("city-btn").removeEventListener("click", retreiveCityWeather);
-
-
-
-
-
-
+document.getElementById("city-btn").addEventListener("click", searchButtonH);
 
 
 

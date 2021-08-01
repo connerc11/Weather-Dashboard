@@ -2,6 +2,10 @@
     color: blue;
 }
 
+header {
+    background-image: linear-gradient(to right, rgb(136, 136, 218), blue);
+}
+
 .card-text {
     color: blue;
 }
