@@ -1,21 +1,21 @@
 * {
-    color: blue;
+    color: silver;
 }
 
 header {
     background-image: linear-gradient(to right, rgb(136, 136, 218), blue);
 }
 
-.card-text {
-    color: blue;
-}
+/* .card-text {
+    color: orange;
+} */
 
 .card-title {
     text-align: center;
 }
 
 .card-body {
-    color: blue;
+    color: gray;
     text-align: center;
 }
 

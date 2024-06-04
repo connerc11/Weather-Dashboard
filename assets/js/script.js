@@ -35,7 +35,7 @@ function getWeather(cityName) {
             let weatherPic = response.data.weather[0].icon;
             currentPicEl.setAttribute("src", "https://openweathermap.org/img/wn/" + weatherPic + "@2x.png");
             currentPicEl.setAttribute("alt", response.data.weather[0].description);
-            currentTempEl.innerHTML = "Temperature: " + k2f(response.data.main.temp) + " &#176F";
+            currentTempEl.innerHTML = "Temperature: " + tempC(response.data.main.temp) + " &#176F";
             currentHumidityEl.innerHTML = "Humidity: " + response.data.main.humidity + "%";
             currentWindEl.innerHTML = "Wind Speed: " + response.data.wind.speed + " MPH";
             
@@ -90,7 +90,7 @@ function getWeather(cityName) {
                         forecastWeatherEl.setAttribute("alt", response.data.list[forecastIndex].weather[0].description);
                         forecastEls[i].append(forecastWeatherEl);
                         const forecastTempEl = document.createElement("p");
-                        forecastTempEl.innerHTML = "Temp: " + k2f(response.data.list[forecastIndex].main.temp) + " &#176F";
+                        forecastTempEl.innerHTML = "Temp: " + tempC(response.data.list[forecastIndex].main.temp) + " &#176F";
                         forecastEls[i].append(forecastTempEl);
                         const forecastHumidityEl = document.createElement("p");
                         forecastHumidityEl.innerHTML = "Humidity: " + response.data.list[forecastIndex].main.humidity + "%";
@@ -116,7 +116,7 @@ clearEl.addEventListener("click", function () {
     renderSearchHistory();
 })
 
-function k2f(K) {
+function tempC(K) {
     return Math.floor((K - 273.15) * 1.8 + 32);
 }
 
