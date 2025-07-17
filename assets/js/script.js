@@ -1,3 +1,6 @@
+// Place APIKey at the top-level scope so all functions can access it
+const APIKey = "0ab31758ba7256fe2d1bebcb97953927";
+
 function initPage() {
     const cityEl = document.getElementById("enter-city");
     const searchEl = document.getElementById("search-button");
@@ -13,9 +16,6 @@ function initPage() {
     var todayweatherEl = document.getElementById("today-weather");
     let searchHistory = JSON.parse(localStorage.getItem("search")) || [];
 
-
-
-const APIKey = "0ab31758ba7256fe2d1bebcb97953927";
 
 
 function getWeather(cityName) {
@@ -36,7 +36,6 @@ function getWeather(cityName) {
             setWeatherBackground(response.data.weather[0].main);
 
             // Animated weather icon
-            console.log('Current weather iconCode:', response.data.weather[0].icon);
             setAnimatedWeatherIcon(response.data.weather[0].main, currentPicEl, response.data.weather[0].icon);
 
             // Feels like
@@ -96,7 +95,6 @@ function getWeather(cityName) {
                         forecastEls[i].append(forecastDateEl);
 
                         // Animated icon for forecast
-                        console.log('Forecast iconCode:', response.data.list[forecastIndex].weather[0].icon);
                         const forecastWeatherEl = document.createElement("img");
                         setAnimatedWeatherIcon(response.data.list[forecastIndex].weather[0].main, forecastWeatherEl, response.data.list[forecastIndex].weather[0].icon);
                         forecastWeatherEl.setAttribute("alt", response.data.list[forecastIndex].weather[0].description);
@@ -437,6 +435,224 @@ if (searchHistory.length > 0) {
 
 }
 
+// --- Tab Navigation Logic ---
+window.showTab = function(tab) {
+    document.getElementById('page-dashboard').style.display = (tab === 'dashboard') ? '' : 'none';
+    document.getElementById('page-compare').style.display = (tab === 'compare') ? '' : 'none';
+    document.getElementById('page-favorites').style.display = (tab === 'favorites') ? '' : 'none';
+    document.getElementById('tab-dashboard').classList.toggle('active', tab === 'dashboard');
+    document.getElementById('tab-compare').classList.toggle('active', tab === 'compare');
+    document.getElementById('tab-favorites').classList.toggle('active', tab === 'favorites');
+};
+
+// --- Compare Page Logic (stub) ---
+document.addEventListener('DOMContentLoaded', function() {
+    const compareBtn = document.getElementById('compare-btn');
+    if (compareBtn) {
+        compareBtn.addEventListener('click', function() {
+            const city1 = document.getElementById('compare-city-1').value.trim();
+            const city2 = document.getElementById('compare-city-2').value.trim();
+            const results = document.getElementById('compare-results');
+            if (!city1 || !city2) {
+                results.innerHTML = `<div class='alert alert-danger'>Please enter both cities to compare.</div>`;
+                return;
+            }
+            results.innerHTML = '<div>Loading...</div>';
+            Promise.all([
+                axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city1)}&appid=${APIKey}`),
+                axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city2)}&appid=${APIKey}`)
+            ]).then(([res1, res2]) => {
+                const data1 = res1.data;
+                const data2 = res2.data;
+                function tempF(K) { return Math.floor((K - 273.15) * 1.8 + 32); }
+                const fields = [
+                    { label: 'Temperature', key: 'temp', format: v => tempF(v) + '°F' },
+                    { label: 'Feels Like', key: 'feels_like', format: v => tempF(v) + '°F' },
+                    { label: 'Humidity', key: 'humidity', format: v => v + '%' },
+                    { label: 'Wind Speed', key: 'wind', format: v => v.speed + ' MPH' },
+                    { label: 'Weather', key: 'weather', format: v => v[0].main }
+                ];
+                function card(city, data) {
+                    return `<div class='card glass-card p-3 m-2' style='min-width:220px;'>
+                        <h5>${city}</h5>
+                        <img src='https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png' alt='' style='width:48px;height:48px;'>
+                        <ul class='list-unstyled mt-2 mb-0'>
+                            <li><b>Temperature:</b> ${tempF(data.main.temp)}°F</li>
+                            <li><b>Feels Like:</b> ${tempF(data.main.feels_like)}°F</li>
+                            <li><b>Humidity:</b> ${data.main.humidity}%</li>
+                            <li><b>Wind:</b> ${data.wind.speed} MPH</li>
+                            <li><b>Weather:</b> ${data.weather[0].main}</li>
+                        </ul>
+                    </div>`;
+                }
+                // Highlight differences
+                function diffStyle(val1, val2, isNum) {
+                    if (val1 === val2) return '';
+                    if (isNum && val1 > val2) return 'color:#43e97b;font-weight:bold;';
+                    if (isNum && val1 < val2) return 'color:#fa709a;font-weight:bold;';
+                    return 'text-decoration:underline;';
+                }
+                let diffTable = `<div class='row justify-content-center'><div class='col-md-5'>
+                    <div class='d-flex flex-row justify-content-center'>${card(city1, data1)}${card(city2, data2)}</div>
+                    <div class='glass-card p-3 mt-3'>
+                        <h6 class='mb-2'>Key Differences</h6>
+                        <table class='table table-sm mb-0'><tbody>`;
+                fields.forEach(f => {
+                    let v1 = f.key === 'wind' ? data1.wind : (f.key === 'weather' ? data1.weather : data1.main[f.key]);
+                    let v2 = f.key === 'wind' ? data2.wind : (f.key === 'weather' ? data2.weather : data2.main[f.key]);
+                    let isNum = typeof (f.key === 'wind' ? v1.speed : v1) === 'number';
+                    let disp1 = f.format(v1);
+                    let disp2 = f.format(v2);
+                    diffTable += `<tr><td>${f.label}</td><td style='${diffStyle(v1, v2, isNum)}'>${disp1}</td><td style='${diffStyle(v2, v1, isNum)}'>${disp2}</td></tr>`;
+                });
+                diffTable += `</tbody></table></div></div></div>`;
+                results.innerHTML = diffTable;
+            }).catch(() => {
+                results.innerHTML = `<div class='alert alert-danger'>Could not fetch weather for one or both cities. Please check spelling and try again.</div>`;
+            });
+        });
+    }
+    // --- History Page Logic ---
+    const historyBtn = document.getElementById('history-btn');
+    if (historyBtn) {
+        historyBtn.addEventListener('click', function() {
+            const city = document.getElementById('history-city').value.trim();
+            const date = document.getElementById('history-date').value;
+            const results = document.getElementById('history-results');
+            results.innerHTML = '<div>Loading...</div>';
+            if (!city || !date) {
+                results.innerHTML = `<div class='alert alert-danger'>Please enter both a city and a date.</div>`;
+                return;
+            }
+            // Calculate UNIX timestamp for selected date at noon UTC
+            const selectedDate = new Date(date);
+            const now = new Date();
+            const daysAgo = Math.floor((now - selectedDate) / (1000 * 60 * 60 * 24));
+            if (daysAgo < 0) {
+                results.innerHTML = `<div class='alert alert-warning'>Cannot show weather for future dates. Please select a past date.</div>`;
+                return;
+            }
+            if (daysAgo > 5) {
+                results.innerHTML = `<div class='alert alert-warning'>Sorry, free historical weather data is only available for the last 5 days.</div>`;
+                return;
+            }
+            // Step 1: Get city coordinates
+            axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${APIKey}`)
+                .then(function(res) {
+                    const { lat, lon } = res.data.coord;
+                    // Step 2: Get historical weather for that date (at noon)
+                    const dt = Math.floor(selectedDate.setUTCHours(12,0,0,0) / 1000);
+                    return axios.get(`https://api.openweathermap.org/data/2.5/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${dt}&appid=${APIKey}`);
+                })
+                .then(function(res) {
+                    const data = res.data;
+                    // Find the hour closest to noon
+                    let hourData = data.hourly && data.hourly.length ? data.hourly[Math.floor(data.hourly.length/2)] : null;
+                    if (!hourData) {
+                        results.innerHTML = `<div class='alert alert-warning'>No data found for this date.</div>`;
+                        return;
+                    }
+                    function tempF(K) { return Math.floor((K - 273.15) * 1.8 + 32); }
+                    results.innerHTML = `
+                        <div class='card glass-card p-3'>
+                            <h5>${city} on ${date}</h5>
+                            <img src='https://openweathermap.org/img/wn/${hourData.weather[0].icon}@2x.png' alt='' style='width:48px;height:48px;'>
+                            <ul class='list-unstyled mt-2 mb-0'>
+                                <li><b>Temperature:</b> ${tempF(hourData.temp)}°F</li>
+                                <li><b>Feels Like:</b> ${tempF(hourData.feels_like)}°F</li>
+                                <li><b>Humidity:</b> ${hourData.humidity}%</li>
+                                <li><b>Wind:</b> ${hourData.wind_speed} MPH</li>
+                                <li><b>Weather:</b> ${hourData.weather[0].main}</li>
+                            </ul>
+                        </div>
+                    `;
+                })
+                .catch(function() {
+                    results.innerHTML = `<div class='alert alert-danger'>Could not fetch historical weather for this city and date. (Note: Only the last 5 days are available for free.)</div>`;
+                });
+        });
+    }
+});
+
 window.addEventListener('DOMContentLoaded', function() {
     initPage();
+});
+
+// --- Favorites Page Logic ---
+function getWeatherFact(city, weather) {
+    // Simple fun facts based on weather type
+    const facts = {
+        Clear: `Did you know? The sun is about 93 million miles from Earth!`,
+        Clouds: `Clouds are made of tiny water droplets or ice crystals that float in the air.`,
+        Rain: `Raindrops can fall at speeds of about 22 miles per hour!`,
+        Snow: `No two snowflakes are exactly alike!`,
+        Thunderstorm: `Lightning can heat the air to 5x hotter than the sun's surface!`,
+        Mist: `Fog is just a cloud that touches the ground!`,
+        Drizzle: `Drizzle is made of very small, light rain drops.`
+    };
+    return facts[weather] || `Weather is amazing!`;
+}
+
+function renderFavorites() {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const list = document.getElementById('favorites-list');
+    const facts = document.getElementById('favorite-facts');
+    list.innerHTML = '';
+    facts.innerHTML = '';
+    if (!favorites.length) {
+        list.innerHTML = `<div class='alert alert-info'>No favorite cities yet. Add one above!</div>`;
+        return;
+    }
+    favorites.forEach(city => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-outline-primary m-1';
+        btn.innerText = city;
+        btn.onclick = function() {
+            facts.innerHTML = 'Loading...';
+            axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${APIKey}`)
+                .then(res => {
+                    const weather = res.data.weather[0].main;
+                    const fact = getWeatherFact(city, weather);
+                    facts.innerHTML = `<div class='card glass-card p-3 mt-2'><h5>${city}</h5><p><b>Current Weather:</b> ${weather}</p><p>${fact}</p></div>`;
+                })
+                .catch(() => {
+                    facts.innerHTML = `<div class='alert alert-danger'>Could not fetch weather for ${city}.</div>`;
+                });
+        };
+        // Remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn btn-sm btn-danger ml-2';
+        removeBtn.innerHTML = 'Remove';
+        removeBtn.onclick = function(e) {
+            e.stopPropagation();
+            const newFavs = favorites.filter(f => f !== city);
+            localStorage.setItem('favorites', JSON.stringify(newFavs));
+            renderFavorites();
+            facts.innerHTML = '';
+        };
+        const wrapper = document.createElement('div');
+        wrapper.className = 'd-flex align-items-center mb-2';
+        wrapper.appendChild(btn);
+        wrapper.appendChild(removeBtn);
+        list.appendChild(wrapper);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const addBtn = document.getElementById('add-favorite-btn');
+    if (addBtn) {
+        addBtn.addEventListener('click', function() {
+            const input = document.getElementById('favorite-city');
+            const city = input.value.trim();
+            if (!city) return;
+            let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+            if (!favorites.includes(city)) {
+                favorites.push(city);
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+            }
+            input.value = '';
+            renderFavorites();
+        });
+    }
+    renderFavorites();
 });
