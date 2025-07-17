@@ -1,4 +1,3 @@
-console.log('Script loaded: script.js');
 function initPage() {
     const cityEl = document.getElementById("enter-city");
     const searchEl = document.getElementById("search-button");
@@ -113,36 +112,8 @@ function getWeather(cityName) {
         });
 // Set animated weather icon based on weather condition
 function setAnimatedWeatherIcon(condition, imgEl, iconCode) {
-    // Use animated GIFs for weather icons, fallback to OpenWeatherMap icon
-    let iconUrl = '';
-    switch (condition.toLowerCase()) {
-        case 'clear':
-        case 'sunny':
-            iconUrl = 'https://assets.codepen.io/5647096/sunny.gif';
-            break;
-        case 'clouds':
-            iconUrl = 'https://assets.codepen.io/5647096/cloudy.gif';
-            break;
-        case 'rain':
-        case 'drizzle':
-            iconUrl = 'https://assets.codepen.io/5647096/rainy.gif';
-            break;
-        case 'thunderstorm':
-            iconUrl = 'https://assets.codepen.io/5647096/thunder.gif';
-            break;
-        case 'snow':
-            iconUrl = 'https://assets.codepen.io/5647096/snowy.gif';
-            break;
-        case 'mist':
-        case 'fog':
-            iconUrl = 'https://assets.codepen.io/5647096/foggy.gif';
-            break;
-        default:
-            iconUrl = '';
-    }
     let fallbackUrl = iconCode ? `https://openweathermap.org/img/wn/${iconCode}@2x.png` : 'https://cdn.jsdelivr.net/gh/erikflowers/weather-icons/PNG/128/na.png';
-    imgEl.onerror = function() { imgEl.src = fallbackUrl; };
-    imgEl.src = iconUrl || fallbackUrl;
+    imgEl.src = fallbackUrl;
     imgEl.classList.add('animated-weather');
 }
 
@@ -248,10 +219,23 @@ function setWeatherBackground(condition) {
 // Get history from local storage if any
 searchEl.addEventListener("click", function () {
     const searchTerm = cityEl.value;
-    getWeather(searchTerm);
-    searchHistory.push(searchTerm);
-    localStorage.setItem("search", JSON.stringify(searchHistory));
-    renderSearchHistory();
+    if (!searchTerm.trim()) {
+        showSearchMessage('Please enter a city name.', true);
+        return;
+    }
+    showSearchMessage('Searching for "' + searchTerm + '"...');
+    axios.get("https://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&appid=" + APIKey)
+        .then(function (response) {
+            getWeather(searchTerm);
+            searchHistory.push(searchTerm);
+            localStorage.setItem("search", JSON.stringify(searchHistory));
+            renderSearchHistory();
+            cityEl.value = "";
+            showSearchMessage('Weather for "' + searchTerm + '" loaded!', false);
+        })
+        .catch(function (error) {
+            showSearchMessage('City not found. Please try again.', true);
+        });
 })
 
 // Clear History button
@@ -261,25 +245,187 @@ clearEl.addEventListener("click", function () {
     renderSearchHistory();
 })
 
+function showSearchMessage(msg, isError = false) {
+    let msgEl = document.getElementById('user-message');
+    if (!msgEl) return;
+    msgEl.innerText = msg;
+    msgEl.classList.remove('error', 'success');
+    msgEl.classList.add(isError ? 'error' : 'success');
+    msgEl.style.opacity = 1;
+    setTimeout(() => { msgEl.style.opacity = 0; }, 2000);
+}
+
 function tempC(K) {
     return Math.floor((K - 273.15) * 1.8 + 32);
 }
 
 function renderSearchHistory() {
     historyEl.innerHTML = "";
-    for (let i = 0; i < searchHistory.length; i++) {
+    searchHistory.forEach((city, idx) => {
+        const wrapper = document.createElement("div");
+        wrapper.style.display = "flex";
+        wrapper.style.alignItems = "center";
+        wrapper.style.marginBottom = "0.5rem";
+        // Card style for search history items
+        wrapper.style.border = "1.5px solid #e0e0e0";
+        wrapper.style.background = "rgba(255,255,255,0.25)";
+        wrapper.style.backdropFilter = "blur(4px)";
+        wrapper.style.borderRadius = "12px";
+        wrapper.style.boxShadow = "0 2px 8px rgba(0,0,0,0.07)";
+
         const historyItem = document.createElement("input");
         historyItem.setAttribute("type", "text");
         historyItem.setAttribute("readonly", true);
         historyItem.setAttribute("class", "form-control d-block bg-white searched-city-item");
-        historyItem.setAttribute("value", searchHistory[i]);
+        historyItem.setAttribute("value", city);
+        historyItem.style.flex = "1";
+        historyItem.style.background = "rgba(255,255,255,0.7)";
+        historyItem.style.border = "none";
+        historyItem.style.fontWeight = "bold";
+        historyItem.style.fontSize = "1rem";
+        historyItem.style.letterSpacing = "0.5px";
+        historyItem.style.color = "#222";
+        historyItem.style.cursor = "pointer";
         historyItem.addEventListener("click", function () {
             getWeather(historyItem.value);
-        })
-        historyEl.append(historyItem);
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.innerHTML = "<span style='font-size:1.2rem;font-weight:bold;'>X</span>";
+        deleteBtn.setAttribute("class", "delete-city-btn");
+        deleteBtn.style.marginLeft = "8px";
+        deleteBtn.style.background = "#fa709a";
+        deleteBtn.style.color = "#fff";
+        deleteBtn.style.border = "3px solid #222";
+        deleteBtn.style.borderRadius = "50%";
+        deleteBtn.style.width = "36px";
+        deleteBtn.style.height = "36px";
+        deleteBtn.style.fontSize = "1.2rem";
+        deleteBtn.style.cursor = "pointer";
+        deleteBtn.style.display = "flex";
+        deleteBtn.style.alignItems = "center";
+        deleteBtn.style.justifyContent = "center";
+        deleteBtn.style.zIndex = "10";
+        deleteBtn.title = "Delete this city";
+        deleteBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            searchHistory.splice(idx, 1);
+            localStorage.setItem("search", JSON.stringify(searchHistory));
+            renderSearchHistory();
+        });
+
+        wrapper.appendChild(historyItem);
+        wrapper.appendChild(deleteBtn);
+        historyEl.appendChild(wrapper);
+    });
+}
+
+// --- Hourly Forecast Carousel ---
+function renderHourlyForecast(hourlyData) {
+    const carousel = document.getElementById('hourly-forecast-carousel');
+    if (!carousel) return;
+    if (!hourlyData || hourlyData.length === 0) {
+        carousel.style.display = 'none';
+        return;
+    }
+    carousel.innerHTML = '';
+    hourlyData.forEach(hour => {
+        const item = document.createElement('div');
+        item.className = 'hourly-forecast-item';
+        item.innerHTML = `
+            <div class="hourly-forecast-time">${hour.time}</div>
+            <img class="hourly-forecast-icon" src="${hour.icon}" alt="${hour.desc}">
+            <div class="hourly-forecast-temp">${hour.temp}&#176;F</div>
+        `;
+        carousel.appendChild(item);
+    });
+    carousel.style.display = 'flex';
+}
+
+// --- Animated Weather Effects Overlay ---
+function setWeatherEffectsOverlay(condition) {
+    const overlay = document.getElementById('weather-effects-overlay');
+    if (!overlay) return;
+    overlay.innerHTML = '';
+    if (!condition) return;
+    const cond = condition.toLowerCase();
+    if (cond === 'rain' || cond === 'drizzle') {
+        // Simple animated rain effect
+        overlay.innerHTML = `<div style="position:absolute;width:100vw;height:100vh;overflow:hidden;z-index:10;pointer-events:none;">
+            <svg width="100%" height="100%">
+                <g>
+                    <rect x="12%" y="10%" width="2" height="30" fill="#8f94fb" opacity="0.4">
+                        <animate attributeName="y" values="10%;90%;10%" dur="0.8s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="32%" y="20%" width="2" height="30" fill="#8f94fb" opacity="0.4">
+                        <animate attributeName="y" values="20%;95%;20%" dur="1.1s" repeatCount="indefinite" />
+                    </rect>
+                    <rect x="62%" y="15%" width="2" height="30" fill="#8f94fb" opacity="0.4">
+                        <animate attributeName="y" values="15%;92%;15%" dur="0.7s" repeatCount="indefinite" />
+                    </rect>
+                </g>
+            </svg>
+        </div>`;
+    } else if (cond === 'snow') {
+        // Simple animated snow effect
+        overlay.innerHTML = `<div style="position:absolute;width:100vw;height:100vh;overflow:hidden;z-index:10;pointer-events:none;">
+            <svg width="100%" height="100%">
+                <circle cx="18%" cy="10%" r="6" fill="#fff" opacity="0.7">
+                    <animate attributeName="cy" values="10%;90%;10%" dur="3.5s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="55%" cy="20%" r="5" fill="#fff" opacity="0.6">
+                    <animate attributeName="cy" values="20%;95%;20%" dur="4.2s" repeatCount="indefinite" />
+                </circle>
+            </svg>
+        </div>`;
+    } else if (cond === 'thunderstorm') {
+        // Simple animated lightning effect
+        overlay.innerHTML = `<div style="position:absolute;width:100vw;height:100vh;overflow:hidden;z-index:10;pointer-events:none;">
+            <svg width="100%" height="100%">
+                <polyline points="50,10 55,30 45,30 50,50" fill="none" stroke="#fffbe6" stroke-width="4">
+                    <animate attributeName="opacity" values="1;0;1" dur="0.7s" repeatCount="indefinite" />
+                </polyline>
+            </svg>
+        </div>`;
+    } else if (cond === 'fog' || cond === 'mist') {
+        // Simple animated fog effect
+        overlay.innerHTML = `<div style="position:absolute;width:100vw;height:100vh;overflow:hidden;z-index:10;pointer-events:none;">
+            <svg width="100%" height="100%">
+                <rect x="0" y="70%" width="100%" height="40" fill="#fff" opacity="0.13">
+                    <animate attributeName="y" values="70%;75%;70%" dur="5s" repeatCount="indefinite" />
+                </rect>
+            </svg>
+        </div>`;
     }
 }
 
+// --- Patch getWeather to fetch and render hourly forecast, and trigger overlay ---
+const origGetWeather = getWeather;
+getWeather = function(cityName) {
+    origGetWeather(cityName);
+    // Fetch hourly forecast from OpenWeatherMap 5-day/3-hour API
+    let queryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(cityName)}&appid=${APIKey}`;
+    axios.get(queryURL).then(function(response) {
+        const list = response.data.list;
+        const now = new Date();
+        const hourly = [];
+        for (let i = 0; i < 8; i++) { // Next 24 hours (3-hour intervals)
+            const entry = list[i];
+            const dt = new Date(entry.dt * 1000);
+            hourly.push({
+                time: dt.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                temp: tempC(entry.main.temp),
+                icon: `https://openweathermap.org/img/wn/${entry.weather[0].icon}@2x.png`,
+                desc: entry.weather[0].description
+            });
+        }
+        renderHourlyForecast(hourly);
+    });
+    // Also set animated overlay based on current weather
+    axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cityName)}&appid=${APIKey}`).then(function(response) {
+        setWeatherEffectsOverlay(response.data.weather[0].main);
+    });
+};
 
 renderSearchHistory();
 if (searchHistory.length > 0) {

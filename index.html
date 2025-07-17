@@ -78,7 +78,8 @@
                     </div>
                 </div>
                 <button class="btn btn-secondary mb-3" type="button" id="clear-history">Clear history</button>
-                <form id="history"></form>
+                <div id="user-message" style="min-height:32px;margin-bottom:0.5rem;"></div>
+                <div id="history"></div>
             </div>
             <div class="col-lg-9">
                 <div class="row mr-0">
@@ -96,6 +97,14 @@
                         </div>
                     </div>
                 </div>
+                <!-- Hourly Forecast Carousel -->
+                <div class="row" id="hourly-forecast-row">
+                    <div class="col-12">
+                        <div id="hourly-forecast-carousel" class="hourly-carousel glass-card" style="overflow-x:auto;white-space:nowrap;padding:0.7rem 0.5rem 0.7rem 0.5rem;margin-bottom:1.2rem;display:none;"></div>
+                    </div>
+                </div>
+                <!-- Animated Weather Effects Overlay -->
+                <div id="weather-effects-overlay"></div>
                 <div class="row d-none" id="fiveday-header">
                     <div class="col-12">
                         <h3>5-Day Forecast</h3>

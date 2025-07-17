@@ -145,6 +145,150 @@ header {
     background: linear-gradient(90deg, #d1c4e9 0%, #b3c6fc 100%) !important;
 }
 
+/* --- Enhanced Saved Search History Styling --- */
+#history > div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.7rem;
+    background: rgba(255,255,255,0.35);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(102,126,234,0.10), 0 1.5px 8px rgba(120,75,162,0.07);
+    border: 1.5px solid #e0eafc;
+    backdrop-filter: blur(6px);
+    transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+    padding: 0.3rem 0.7rem 0.3rem 0.3rem;
+    position: relative;
+    z-index: 2;
+}
+#history > div:hover {
+    background: rgba(230, 234, 252, 0.65);
+    box-shadow: 0 4px 18px rgba(102,126,234,0.18), 0 2px 12px rgba(120,75,162,0.10);
+    border: 1.5px solid #764ba2;
+}
+
+#history .searched-city-item {
+    background: transparent !important;
+    color: #333 !important;
+    font-weight: 600;
+    border: none !important;
+    border-radius: 8px !important;
+    margin-bottom: 0;
+    box-shadow: none;
+    font-size: 1.08rem;
+    letter-spacing: 0.5px;
+    padding-left: 0.5rem;
+    transition: color 0.2s;
+}
+#history .searched-city-item:focus {
+    outline: 2px solid #764ba2;
+    color: #764ba2 !important;
+}
+
+.delete-city-btn {
+    margin-left: 10px;
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(250,112,154,0.10);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    z-index: 10;
+    outline: none;
+    border: 2.5px solid #fffbe6;
+}
+.delete-city-btn:hover, .delete-city-btn:focus {
+    background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(250,112,154,0.18);
+    transform: scale(1.08);
+    border: 2.5px solid #764ba2;
+}
+
+#user-message {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 32px;
+    font-size: 1.04rem;
+    font-weight: 500;
+    color: #764ba2;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0.4rem 0.8rem 0 0;
+    margin-bottom: 0.5rem;
+    transition: color 0.2s, opacity 0.2s;
+    z-index: 2;
+}
+#user-message.error {
+    color: #fa709a;
+    background: none;
+}
+#user-message.success {
+    color: #43e97b;
+    background: none;
+}
+
+/* --- Hourly Forecast Carousel --- */
+.hourly-carousel {
+    background: rgba(255,255,255,0.25);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(102,126,234,0.10), 0 1.5px 8px rgba(120,75,162,0.07);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    overflow-x: auto;
+    min-height: 110px;
+    z-index: 2;
+}
+.hourly-forecast-item {
+    display: inline-block;
+    min-width: 80px;
+    padding: 0.5rem 0.7rem;
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    box-shadow: 0 1.5px 8px rgba(102,126,234,0.07);
+    text-align: center;
+    font-size: 0.98rem;
+    color: #333;
+    margin-right: 0.5rem;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+.hourly-forecast-item:last-child {
+    margin-right: 0;
+}
+.hourly-forecast-time {
+    font-weight: 600;
+    color: #764ba2;
+    margin-bottom: 0.2rem;
+}
+.hourly-forecast-icon {
+    width: 38px;
+    height: 38px;
+    margin-bottom: 0.2rem;
+}
+.hourly-forecast-temp {
+    font-weight: 500;
+    color: #222;
+}
+
+/* --- Animated Weather Effects Overlay --- */
+#weather-effects-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 10;
+}
+
 @media (max-width: 991px) {
     .forecast {
         min-width: 120px;
@@ -155,3 +299,14 @@ header {
     }
 }
 
+@media (max-width: 600px) {
+    #history > div {
+        padding: 0.2rem 0.3rem 0.2rem 0.2rem;
+    }
+    .delete-city-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
+}
+/* --- End Enhanced Saved Search History Styling --- */
