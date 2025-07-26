@@ -1,7 +1,7 @@
 
 
 // Use your deployed backend URL for all weather API requests
-const BACKEND_URL = 'https://weather-explorer-s27g.onrender.com';
+const BACKEND_URL = 'https://weather-explorer-s27g.onrender.com/api';
 
 function initPage() {
     const cityEl = document.getElementById("enter-city");
